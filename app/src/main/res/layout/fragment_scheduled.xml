@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    tools:context=".Fragment.ScheduledFragment">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/title"
+        android:id="@+id/cardview"
+        android:padding="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ticket_title"
+                android:layout_margin="5dp">
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ticket"
+                    android:layout_centerInParent="true"/>
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ticket_info_id"
+                android:layout_below="@id/ticket_title"
+                android:layout_margin="5dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1455234"
+                    android:textSize="15dp"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/id_ticket"
+                    android:textColor="@color/colorBlack"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:textSize="15dp"
+                    android:layout_height="wrap_content"
+                    android:text="SERIAL NUMBER"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:textColor="@color/colorBlack" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ticket_info_id"
+                android:layout_margin="5dp"
+                android:id="@+id/ticket_info_price">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Maputo - Gaza"
+                    android:textSize="15dp"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/ticket_price"
+                    android:textColor="@color/colorBlack"/>
+
+                <TextView
+                    android:id="@+id/available_tickets"
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:textSize="15dp"
+                    android:layout_height="wrap_content"
+                    android:text="ROTA"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:textColor="@color/colorBlack" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ticket_info_price"
+                android:layout_margin="5dp"
+                android:id="@+id/ticket_info_available_tickets">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="6.000 MT"
+                    android:textSize="15dp"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/tickets_available"
+                    android:textColor="@color/colorBlack"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:textSize="15dp"
+                    android:layout_height="wrap_content"
+                    android:text="PREÇO"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:textColor="@color/colorBlack" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ticket_info_available_tickets"
+                android:layout_margin="5dp"
+                android:id="@+id/ticket_info_status">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="30/05/2018"
+                    android:textSize="15dp"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/tickets_status"
+                    android:textColor="@color/colorBlack"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:textSize="15dp"
+                    android:layout_height="wrap_content"
+                    android:text="DATA VIAGEM"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:textColor="@color/colorBlack" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ticket_info_status"
+                android:layout_margin="5dp"
+                android:id="@+id/ticket_info_hour">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="05h 30 min"
+                    android:textSize="15dp"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/tickets_departue_Date"
+                    android:textColor="@color/colorBlack"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:textSize="15dp"
+                    android:layout_height="wrap_content"
+                    android:text="HORA PARTIDA"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:textColor="@color/colorBlack" />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ticket_info_hour"
+                android:layout_margin="5dp"
+                android:id="@+id/ticket_info_passengers">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3"
+                    android:textSize="15dp"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/pass_numb"
+                    android:textColor="@color/colorBlack"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:textSize="15dp"
+                    android:layout_height="wrap_content"
+                    android:text="PASSAGEIROS"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:textColor="@color/colorBlack" />
+
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+
+</RelativeLayout>
