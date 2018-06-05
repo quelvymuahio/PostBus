@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "173865888039",
+    "firebase_url": "https://postbus-dc2fa.firebaseio.com",
+    "project_id": "postbus-dc2fa",
+    "storage_bucket": "postbus-dc2fa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173865888039:android:a30b41ebf721519c",
+        "android_client_info": {
+          "package_name": "com.project.quelvymuahio.postbus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "173865888039-bk81n343b8u6117t3m1ibqf332c1i7c0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.quelvymuahio.postbus",
+            "certificate_hash": "1748b5c845614eb245ae359c570e85f1a901f72f"
+          }
+        },
+        {
+          "client_id": "173865888039-obcetq2s1gfa62n1o63vnv9lit5ef44r.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "173865888039-obcetq2s1gfa62n1o63vnv9lit5ef44r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdwcHXH77xByh3kmtdcPfOdgQgi-Ask4A"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "173865888039-obcetq2s1gfa62n1o63vnv9lit5ef44r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
