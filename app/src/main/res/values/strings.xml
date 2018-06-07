@@ -40,6 +40,9 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
+    <string name="facebook_app_id">219315388673384</string>
+    <string name="fb_login_protocol_scheme">fb219315388673384</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
