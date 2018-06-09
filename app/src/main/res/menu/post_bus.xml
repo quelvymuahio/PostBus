@@ -6,4 +6,10 @@
         android:orderInCategory="100"
         android:title="@string/user_guide"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/logout"
+        android:orderInCategory="100"
+        android:title="@string/log_out"
+        app:showAsAction="collapseActionView"/>
 </menu>

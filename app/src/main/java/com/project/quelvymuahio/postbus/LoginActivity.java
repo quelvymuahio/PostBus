@@ -187,8 +187,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser != null){
-            Toast.makeText(getApplicationContext(), "Congrats You're logged in...pass to the main page", Toast.LENGTH_LONG).show();
-
+            //Toast.makeText(getApplicationContext(), "Congrats You're logged in...pass to the main page", Toast.LENGTH_LONG).show();
+            //updateAndForwardUI(currentUser);
+            startActivity(new Intent(getApplicationContext(), PostBus.class));
+            finish();
         }
 
     }
@@ -202,6 +204,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 if (task.isSuccessful()){
                     FirebaseUser user = mAuth.getCurrentUser();
 
+                    //saveUserToFirebaseDB(user);
+                    //updateAndForwardUI(user);
+                    startActivity(new Intent(getApplicationContext(), PostBus.class));
+                    finish();
+
                     Log.d(TAG, "Autenticou com sucesso");
                     Toast.makeText(getApplicationContext(), user.getDisplayName() + " || " + user.getEmail() + " || " + user.getProviderId(), Toast.LENGTH_LONG).show();
                 }else{
@@ -210,6 +217,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
+    }
+
+    private void saveUserToFirebaseDB(FirebaseUser user) {
+
+    }
+
+    private void updateAndForwardUI(FirebaseUser user) {
+
+        Intent intent = new Intent(getApplicationContext(), PostBus.class);
+
+        //Toast.makeText(getApplicationContext(), user.getDisplayName()+"||"+user.getEmail()+"||"+user.getPhotoUrl(), Toast.LENGTH_SHORT).show();
+        startActivity(intent);
+        finish();
     }
 
     private void populateAutoComplete() {
