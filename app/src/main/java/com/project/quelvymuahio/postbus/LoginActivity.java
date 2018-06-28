@@ -40,6 +40,12 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInApi;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -47,6 +53,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,6 +79,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             "foo@example.com:hello", "bar@example.com:world"
     };
     private static final String TAG = "FACELOG";
+    private static final int RC_SIGN_IN = 101;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -88,6 +96,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private FirebaseAuth mAuth;
 
+    GoogleSignInClient mGoogleSignInClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +111,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         twitter = (ImageView) findViewById(R.id.twitter_login);
         facebook = (ImageView) findViewById(R.id.facebook_login);
         gmail = (ImageView) findViewById(R.id.gmail_login);
+
+        // !!!!!!! Facebook Authentication
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
@@ -133,9 +145,28 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             }
         });
+        // ------------  Finished the Facebook Login  ------------
 
+        // !!!!!!! Starting gmail Login !!!!!!!
 
+        // Configure Google Sign In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
 
+        mGoogleSignInClient = GoogleSignIn.getClient(LoginActivity.this, gso);
+
+        gmail.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
+        });
+
+        // ------------  Finished the Google Login  --------------
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -179,6 +210,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                Log.w(TAG, "Google sign in failed", e);
+                Toast.makeText(getApplicationContext(),"ERRO "+e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+
     }
 
     @Override
@@ -187,14 +230,33 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser != null){
-            //Toast.makeText(getApplicationContext(), "Congrats You're logged in...pass to the main page", Toast.LENGTH_LONG).show();
-            //updateAndForwardUI(currentUser);
             startActivity(new Intent(getApplicationContext(), PostBus.class));
             finish();
         }
 
     }
 
+    private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            //saveUserToFirebaseDB(user);
+
+                            startActivity(new Intent(getApplicationContext(), PostBus.class));
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(),"Deu super erro", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+
+    }
     private void accessFacebookData(AccessToken accessToken){
 
         AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
@@ -205,12 +267,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     FirebaseUser user = mAuth.getCurrentUser();
 
                     //saveUserToFirebaseDB(user);
-                    //updateAndForwardUI(user);
                     startActivity(new Intent(getApplicationContext(), PostBus.class));
                     finish();
 
-                    Log.d(TAG, "Autenticou com sucesso");
-                    Toast.makeText(getApplicationContext(), user.getDisplayName() + " || " + user.getEmail() + " || " + user.getProviderId(), Toast.LENGTH_LONG).show();
                 }else{
                     Log.d(TAG, "Falhou autenticação");
                 }
