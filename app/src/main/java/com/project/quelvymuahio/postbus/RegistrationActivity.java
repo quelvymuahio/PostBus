@@ -5,48 +5,42 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
 
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.webkit.MimeTypeMap;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.project.quelvymuahio.postbus.Upload.UserUpload;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 public class RegistrationActivity extends AppCompatActivity{
 
@@ -54,13 +48,19 @@ public class RegistrationActivity extends AppCompatActivity{
 
     private Uri imageUri;
 
+    private StorageReference storageReference;
+    private DatabaseReference databaseReference;
+
     // UI references.
-    private AutoCompleteTextView fullNameView, userNameView , birthDateView, contacView;
+    private AutoCompleteTextView fullNameView, userNameView , birthDateView, contactView;
     private EditText mPasswordView;
     private Button signUpButton;
     private ImageView userImageView;
-    private View mProgressView;
+    private View progressView;
+    private ProgressBar progressBar;
     private View mLoginFormView;
+
+    private String fullName, password, username, contact, birthDate;
 
     // Date parameters
     private int dpyear, dpmonth, dpday;
@@ -81,10 +81,14 @@ public class RegistrationActivity extends AppCompatActivity{
         fullNameView = (AutoCompleteTextView) findViewById(R.id.registration_full_name);
         birthDateView = (AutoCompleteTextView) findViewById(R.id.registration_birth_date);
         userNameView = (AutoCompleteTextView) findViewById(R.id.registration_username);
-        contacView = (AutoCompleteTextView) findViewById(R.id.registration_contact);
+        contactView = (AutoCompleteTextView) findViewById(R.id.registration_contact);
         userImageView = (ImageView) findViewById(R.id.registration_image);
         mPasswordView = (EditText) findViewById(R.id.registration_password);
         signUpButton = (Button) findViewById(R.id.sign_up_button);
+        progressBar = (ProgressBar) findViewById(R.id.registration_progress);
+
+        storageReference = FirebaseStorage.getInstance().getReference("users");
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
 
         // Leading with Date Picker
         final Calendar calendar = Calendar.getInstance();
@@ -110,12 +114,67 @@ public class RegistrationActivity extends AppCompatActivity{
         signUpButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                fullName = fullNameView.getText().toString();
+                password = mPasswordView.getText().toString();
+                username = userNameView.getText().toString();
+                contact = contactView.getText().toString();
+                birthDate = birthDateView.getText().toString();
+
+                //attemptLogin();
+                uploadUserData();
             }
         });
 
         mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        progressView = findViewById(R.id.login_progress);
+    }
+
+    private String getFileExtension(Uri uri){
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+
+    private void uploadUserData() {
+        if (imageUri != null){
+            StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+
+            fileReference.putFile(imageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressBar.setProgress(0);
+                                }
+                            }, 5000);
+                            UserUpload userUpload = new UserUpload(fullName, username, password , contact, birthDate, taskSnapshot.getDownloadUrl().toString());
+                            String uploadID = databaseReference.push().getKey();
+                            databaseReference.child(uploadID).setValue(userUpload);
+
+                            Toast.makeText(getApplicationContext(), "Salvo com sucesso!", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(getApplicationContext(), "Indo gravar", Toast.LENGTH_SHORT).show();
+                            /*double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                            progressBar.setProgress((int) progress);*/
+                        }
+                    });
+
+        }else{
+            Toast.makeText(getApplicationContext(), "Nenhum ficheiro seleccionado.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void openFileChooser() {
@@ -157,35 +216,49 @@ public class RegistrationActivity extends AppCompatActivity{
         // Reset errors.
         fullNameView.setError(null);
         mPasswordView.setError(null);
-
-        // Store values at the time of the login attempt.
-        String fullName = fullNameView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        userNameView.setError(null);
+        contactView.setError(null);
+        birthDateView.setError(null);
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        /*if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(fullName)) {
+        if (TextUtils.isEmpty(fullName) ) {
             fullNameView.setError(getString(R.string.error_field_required));
             focusView = fullNameView;
             cancel = true;
-        }*/
+        }
+        if (TextUtils.isEmpty(username)) {
+            userNameView.setError(getString(R.string.error_field_required));
+            focusView = userNameView;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(contact) ) {
+            contactView.setError(getString(R.string.error_field_required));
+            focusView = contactView;
+            cancel = true;
+        }
+        if (TextUtils.isEmpty(birthDate)) {
+            birthDateView.setError(getString(R.string.error_field_required));
+            focusView = birthDateView;
+            cancel = true;
+        }
 
         if (cancel) {
             focusView.requestFocus();
         } else {
             showProgress(true);
 
-            startActivity(new Intent(RegistrationActivity.this, PostBus.class));
-            finish();
+            //startActivity(new Intent(RegistrationActivity.this, PostBus.class));
+            //finish();
         }
     }
 
@@ -207,17 +280,17 @@ public class RegistrationActivity extends AppCompatActivity{
                 }
             });
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            progressView.animate().setDuration(shortAnimTime).alpha(
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                    progressView.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
         } else {
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
