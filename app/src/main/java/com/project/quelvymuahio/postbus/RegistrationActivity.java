@@ -29,8 +29,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -52,15 +56,16 @@ public class RegistrationActivity extends AppCompatActivity{
     private DatabaseReference databaseReference;
 
     // UI references.
-    private AutoCompleteTextView fullNameView, userNameView , birthDateView, contactView;
+    private AutoCompleteTextView fullNameView, emailView , birthDateView, contactView;
     private EditText mPasswordView;
     private Button signUpButton;
     private ImageView userImageView;
-    private View progressView;
     private ProgressBar progressBar;
     private View mLoginFormView;
 
-    private String fullName, password, username, contact, birthDate;
+    private String fullName, password, email, contact, birthDate;
+
+    private FirebaseAuth mAuth;
 
     // Date parameters
     private int dpyear, dpmonth, dpday;
@@ -80,7 +85,7 @@ public class RegistrationActivity extends AppCompatActivity{
         // Set up the registration form.
         fullNameView = (AutoCompleteTextView) findViewById(R.id.registration_full_name);
         birthDateView = (AutoCompleteTextView) findViewById(R.id.registration_birth_date);
-        userNameView = (AutoCompleteTextView) findViewById(R.id.registration_username);
+        emailView = (AutoCompleteTextView) findViewById(R.id.registration_email);
         contactView = (AutoCompleteTextView) findViewById(R.id.registration_contact);
         userImageView = (ImageView) findViewById(R.id.registration_image);
         mPasswordView = (EditText) findViewById(R.id.registration_password);
@@ -116,17 +121,37 @@ public class RegistrationActivity extends AppCompatActivity{
             public void onClick(View view) {
                 fullName = fullNameView.getText().toString();
                 password = mPasswordView.getText().toString();
-                username = userNameView.getText().toString();
+                email = emailView.getText().toString();
                 contact = contactView.getText().toString();
                 birthDate = birthDateView.getText().toString();
 
-                //attemptLogin();
+                registrationValidation();
                 uploadUserData();
+
             }
         });
 
         mLoginFormView = findViewById(R.id.login_form);
-        progressView = findViewById(R.id.login_progress);
+    }
+
+    private void createUser() {
+        if (!email.isEmpty() || email != null){
+            mAuth = FirebaseAuth.getInstance();
+            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()){
+
+                        startActivity(new Intent(RegistrationActivity.this, PostBus.class));
+                        finish();
+
+                    }else {
+                        Toast.makeText(getApplicationContext(), ""+task.getException(), Toast.LENGTH_LONG).show();
+                    }
+
+                }
+            });
+        }
     }
 
     private String getFileExtension(Uri uri){
@@ -143,6 +168,7 @@ public class RegistrationActivity extends AppCompatActivity{
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
                             Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
@@ -150,11 +176,12 @@ public class RegistrationActivity extends AppCompatActivity{
                                     progressBar.setProgress(0);
                                 }
                             }, 5000);
-                            UserUpload userUpload = new UserUpload(fullName, username, password , contact, birthDate, taskSnapshot.getDownloadUrl().toString());
+
+                            UserUpload userUpload = new UserUpload(fullName, email, password , contact, birthDate, taskSnapshot.getDownloadUrl().toString());
                             String uploadID = databaseReference.push().getKey();
                             databaseReference.child(uploadID).setValue(userUpload);
 
-                            Toast.makeText(getApplicationContext(), "Salvo com sucesso!", Toast.LENGTH_SHORT).show();
+                            createUser();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -167,8 +194,8 @@ public class RegistrationActivity extends AppCompatActivity{
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                             Toast.makeText(getApplicationContext(), "Indo gravar", Toast.LENGTH_SHORT).show();
-                            /*double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                            progressBar.setProgress((int) progress);*/
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                            progressBar.setProgress((int) progress);
                         }
                     });
 
@@ -211,12 +238,12 @@ public class RegistrationActivity extends AppCompatActivity{
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
+    private void registrationValidation() {
 
         // Reset errors.
         fullNameView.setError(null);
         mPasswordView.setError(null);
-        userNameView.setError(null);
+        emailView.setError(null);
         contactView.setError(null);
         birthDateView.setError(null);
 
@@ -235,11 +262,6 @@ public class RegistrationActivity extends AppCompatActivity{
             focusView = fullNameView;
             cancel = true;
         }
-        if (TextUtils.isEmpty(username)) {
-            userNameView.setError(getString(R.string.error_field_required));
-            focusView = userNameView;
-            cancel = true;
-        }
 
         if (TextUtils.isEmpty(contact) ) {
             contactView.setError(getString(R.string.error_field_required));
@@ -255,43 +277,10 @@ public class RegistrationActivity extends AppCompatActivity{
         if (cancel) {
             focusView.requestFocus();
         } else {
-            showProgress(true);
+            //showProgress(true);
 
             //startActivity(new Intent(RegistrationActivity.this, PostBus.class));
             //finish();
-        }
-    }
-
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            progressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-
-            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 

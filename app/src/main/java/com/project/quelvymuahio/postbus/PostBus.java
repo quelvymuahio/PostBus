@@ -71,10 +71,17 @@ public class PostBus extends AppCompatActivity
 
     private void updatingTheView(FirebaseUser currentUser) {
 
-        username.setText(currentUser.getDisplayName());
+        username.setText(currentUser.getDisplayName() == null || currentUser.getDisplayName().isEmpty() ? "Sem username" : currentUser.getDisplayName());
         userEmail.setText(currentUser.getEmail() == null || currentUser.getEmail().isEmpty() ? "Sem email" : currentUser.getEmail());
-        Picasso.with(getApplicationContext()).load(currentUser.getPhotoUrl().toString()).into(userPhoto);
 
+        if(currentUser.getPhotoUrl() == null){
+            // Setting the default image
+            //Picasso.with(getApplicationContext()).load(currentUser.getPhotoUrl().toString()).into(userPhoto);
+
+        }else {
+
+            Picasso.with(getApplicationContext()).load(currentUser.getPhotoUrl().toString()).into(userPhoto);
+        }
     }
 
     @Override

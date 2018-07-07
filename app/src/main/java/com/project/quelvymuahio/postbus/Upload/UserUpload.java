@@ -2,13 +2,13 @@ package com.project.quelvymuahio.postbus.Upload;
 
 public class UserUpload {
 
-    private String name, username, password, contact, birthDate, imageUrl;
+    private String name, email, password, contact, birthDate, imageUrl;
 
     //public UserUpload(){}
 
-    public UserUpload(String name, String username, String password, String contact, String birthDate, String imageUrl) {
+    public UserUpload(String name, String email, String password, String contact, String birthDate, String imageUrl) {
         this.name = name;
-        this.username = username;
+        this.email = email;
         this.password = password;
         this.contact = contact;
         this.birthDate = birthDate;
@@ -24,12 +24,12 @@ public class UserUpload {
         this.name = name;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
