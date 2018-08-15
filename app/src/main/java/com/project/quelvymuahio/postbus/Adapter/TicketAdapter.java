@@ -55,9 +55,10 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketHolder> {
         final String price = ticket.getBilhete_preco();
         final String availableTickets = ticket.getBilhete_total();
         final String date = ticket.getBilhete_hora_partida();
-        //Drawable drawableImage = context.getResources().getDrawable(imageUrl);
+        Drawable drawableImage = context.getResources().getDrawable(R.drawable.background2);
 
-        Picasso.with(context).load(imageUrl).into(holder.imageView);
+        Picasso.with(context).load(imageUrl).placeholder(R.mipmap.ic_launcher).fit().centerCrop().into(holder.imageView);
+        //holder.imageView.setImageDrawable(drawableImage);
         holder.name.setText(routeName);
         holder.price.setText(price + " MT");
         holder.availableTicket.setText(availableTickets +" Bilhetes");

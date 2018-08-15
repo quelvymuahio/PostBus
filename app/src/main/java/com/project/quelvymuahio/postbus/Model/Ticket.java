@@ -102,4 +102,5 @@ public class Ticket implements Serializable {
     public void setBilhete_hora_chegada(String bilhete_hora_chegada) {
         this.bilhete_hora_chegada = bilhete_hora_chegada;
     }
+
 }
