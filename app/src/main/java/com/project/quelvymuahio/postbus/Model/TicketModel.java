@@ -1,40 +1,56 @@
 package com.project.quelvymuahio.postbus.Model;
 
-import com.project.quelvymuahio.postbus.Enum.TripStatus;
-
-import java.util.Date;
-
 public class TicketModel {
 
-    private Integer id, availableTickets;
-    private Date departueDate, arrivalDate;
-    private String price, departureTime, expectedArrivalTime;
+    private String id, availableTickets, departueDate, arrivalDate, price, departureTime, expectedArrivalTime, tripStatus;
     private RouteModel route;
-    private TripStatus tripStatus;
 
     public TicketModel(){
-
+        // required a no-argument construtor
     }
 
-    public TicketModel(Integer id, Integer availableTickets, String price, Date departueDate, Date arrivalDate, String departureTime, String expectedArrivalTime, RouteModel route, TripStatus tripStatus){
+    public TicketModel(String id, String availableTickets, String departueDate, String arrivalDate, String price, String departureTime, String expectedArrivalTime, String tripStatus, RouteModel route){
         this.id = id;
-        this.availableTickets = availableTickets;
         this.price = price;
-        this.departueDate = departueDate;
-        this.arrivalDate = arrivalDate;
         this.departureTime = departureTime;
         this.expectedArrivalTime = expectedArrivalTime;
-        this.route = route;
+        this.availableTickets = availableTickets;
+        this.departueDate = departueDate;
+        this.arrivalDate = arrivalDate;
         this.tripStatus = tripStatus;
+        this.route = route;
     }
 
-
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAvailableTickets() {
+        return availableTickets;
+    }
+
+    public void setAvailableTickets(String availableTickets) {
+        this.availableTickets = availableTickets;
+    }
+
+    public String getDepartueDate() {
+        return departueDate;
+    }
+
+    public void setDepartueDate(String departueDate) {
+        this.departueDate = departueDate;
+    }
+
+    public String getArrivalDate() {
+        return arrivalDate;
+    }
+
+    public void setArrivalDate(String arrivalDate) {
+        this.arrivalDate = arrivalDate;
     }
 
     public String getPrice() {
@@ -43,22 +59,6 @@ public class TicketModel {
 
     public void setPrice(String price) {
         this.price = price;
-    }
-
-    public Date getDepartueDate() {
-        return departueDate;
-    }
-
-    public void setDepartueDate(Date departueDate) {
-        this.departueDate = departueDate;
-    }
-
-    public Date getArrivalDate() {
-        return arrivalDate;
-    }
-
-    public void setArrivalDate(Date arrivalDate) {
-        this.arrivalDate = arrivalDate;
     }
 
     public String getDepartureTime() {
@@ -77,27 +77,19 @@ public class TicketModel {
         this.expectedArrivalTime = expectedArrivalTime;
     }
 
+    public String getTripStatus() {
+        return tripStatus;
+    }
+
+    public void setTripStatus(String tripStatus) {
+        this.tripStatus = tripStatus;
+    }
+
     public RouteModel getRoute() {
         return route;
     }
 
     public void setRoute(RouteModel route) {
         this.route = route;
-    }
-
-    public TripStatus getTripStatus() {
-        return tripStatus;
-    }
-
-    public void setTripStatus(TripStatus tripStatus) {
-        this.tripStatus = tripStatus;
-    }
-
-    public Integer getAvailableTickets() {
-        return availableTickets;
-    }
-
-    public void setAvailableTickets(Integer availableTickets) {
-        this.availableTickets = availableTickets;
     }
 }

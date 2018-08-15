@@ -89,9 +89,10 @@ public class PostBus extends AppCompatActivity
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if (currentUser == null)
-            backToLogIn();
-        else
+        if (currentUser == null) {
+            //backToLogIn();
+            Toast.makeText(getApplicationContext(), "Nenhum usuario definido", Toast.LENGTH_SHORT).show();
+        }else
             updatingTheView(currentUser);
 
     }

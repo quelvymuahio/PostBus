@@ -2,7 +2,7 @@ package com.project.quelvymuahio.postbus.Enum;
 
 public enum TripStatus {
 
-    RUNNING, CANCELED, DONE, SCHEDULED;
+    RUNNING("A Decorrer"), CANCELED("Cancelado"), DONE("Efectuado"), SCHEDULED("Agendado");
 
     private String description;
 

@@ -209,6 +209,7 @@ public class RegistrationActivity extends AppCompatActivity{
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        userImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
     }
 
     // Date Picker stuff

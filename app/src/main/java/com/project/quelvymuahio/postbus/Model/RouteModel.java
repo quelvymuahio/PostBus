@@ -2,28 +2,18 @@ package com.project.quelvymuahio.postbus.Model;
 
 public class RouteModel {
 
-    private Integer id;
     private CarModel car;
-    private String name;
-    private double distance;
+    private String id, name, distance;
 
     public RouteModel(){
-
+        // required a no-argument construtor
     }
 
-    public RouteModel(Integer id, CarModel car, String name, double distance) {
+    public RouteModel(String id, CarModel car, String name, String distance) {
         this.id = id;
         this.car = car;
         this.name = name;
         this.distance = distance;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public CarModel getCar() {
@@ -34,6 +24,14 @@ public class RouteModel {
         this.car = car;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -42,11 +40,11 @@ public class RouteModel {
         this.name = name;
     }
 
-    public double getDistance() {
+    public String getDistance() {
         return distance;
     }
 
-    public void setDistance(double distance) {
+    public void setDistance(String distance) {
         this.distance = distance;
     }
 }

@@ -2,42 +2,41 @@ package com.project.quelvymuahio.postbus.Model;
 
 public class CarModel {
 
-    private Integer id;
-    private int image, seatingSeats;
-    private String carRegistration;
+    private String id, imageUrl, seatingSeats, carRegistration, diverName;
 
     public CarModel(){
-
+        //required no-argument construtor
     }
 
-    public CarModel(Integer id, int image, int seatingSeats, String carRegistration) {
+    public CarModel(String id, String motorista, String imagem_url, String assentos, String matricula) {
         this.id = id;
-        this.image = image;
-        this.seatingSeats = seatingSeats;
-        this.carRegistration = carRegistration;
+        this.diverName = motorista;
+        this.imageUrl = imagem_url;
+        this.seatingSeats = assentos;
+        this.carRegistration = matricula;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public int getImage() {
-        return image;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImage(int image) {
-        this.image = image;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
-    public int getSeatingSeats() {
+    public String getSeatingSeats() {
         return seatingSeats;
     }
 
-    public void setSeatingSeats(int seatingSeats) {
+    public void setSeatingSeats(String seatingSeats) {
         this.seatingSeats = seatingSeats;
     }
 
@@ -47,5 +46,13 @@ public class CarModel {
 
     public void setCarRegistration(String carRegistration) {
         this.carRegistration = carRegistration;
+    }
+
+    public String getDiverName() {
+        return diverName;
+    }
+
+    public void setDiverName(String diverName) {
+        this.diverName = diverName;
     }
 }

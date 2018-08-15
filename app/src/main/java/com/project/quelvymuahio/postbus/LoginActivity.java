@@ -3,7 +3,10 @@ package com.project.quelvymuahio.postbus;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
@@ -15,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.MimeTypeMap;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,6 +39,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -42,11 +48,17 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.project.quelvymuahio.postbus.Upload.UserUpload;
 
 import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
-
 
     private static final String TAG = "FACELOG";
     private static final int RC_SIGN_IN = 101;
@@ -60,6 +72,9 @@ public class LoginActivity extends AppCompatActivity {
     private ImageView facebook, gmail, twitter;
     private CallbackManager callbackManager;
 
+    private StorageReference storageReference;
+    private DatabaseReference databaseReference;
+
     private FirebaseAuth mAuth;
 
     GoogleSignInClient mGoogleSignInClient;
@@ -69,8 +84,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //Firebase Authentication
+        //Firebase Stuff
         mAuth = FirebaseAuth.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference("users");
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
 
         //Leading with Authentication
 
@@ -198,25 +215,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void login(String emailOrPhoneNumber, String password){
-        final FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (emailOrPhoneNumber.contains("@")){
-            auth.signInWithEmailAndPassword(emailOrPhoneNumber, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()){
-                        updateAndForwardUI(auth.getCurrentUser());
-                    }else
-                        Toast.makeText(getApplicationContext(), task.getException()+"", Toast.LENGTH_LONG).show();
-                }
-            });
-        }else{
-
-        }
-
-
-    }
-
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -226,10 +224,9 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
 
                             FirebaseUser user = mAuth.getCurrentUser();
-                            //saveUserToFirebaseDB(user);
+                            saveUserToFirebaseDB(user);
+                            updateAndForwardUI(user);
 
-                            startActivity(new Intent(getApplicationContext(), PostBus.class));
-                            finish();
                         } else {
                             Toast.makeText(getApplicationContext(),"Deu super erro", Toast.LENGTH_LONG).show();
                         }
@@ -245,11 +242,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
-                    FirebaseUser user = mAuth.getCurrentUser();
 
-                    //saveUserToFirebaseDB(user);
-                    startActivity(new Intent(getApplicationContext(), PostBus.class));
-                    finish();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    saveUserToFirebaseDB(user);
+                    updateAndForwardUI(user);
 
                 }else{
                     Log.d(TAG, "Falhou autenticação");
@@ -259,7 +255,41 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void saveUserToFirebaseDB(FirebaseUser user) {
+    private String getFileExtension(Uri uri){
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+
+    private void saveUserToFirebaseDB(final FirebaseUser user) {
+        final Uri imageUri = user.getPhotoUrl();
+        final String password = mPasswordView.getText().toString();
+        StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+
+        fileReference.putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                        UserUpload userUpload = new UserUpload(user.getDisplayName(), user.getEmail(), password, user.getPhoneNumber(), "", imageUri.toString());
+
+                        String uploadID = databaseReference.push().getKey();
+                        databaseReference.child(uploadID).setValue(userUpload);
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(getApplicationContext(), "Indo gravar", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
     }
 
@@ -311,11 +341,24 @@ public class LoginActivity extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else {
-            showProgress(true);
 
-            Intent intent = new Intent(LoginActivity.this, PostBus.class);
-            startActivity(intent);
-            finish();
+
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()){
+
+                        showProgress(true);
+                        updateAndForwardUI(mAuth.getCurrentUser());
+
+                    }else{
+                        // TO-DO
+                        // Deve ter um texto a vermelho que esteja escrito "Credenciais erradas, tente outra vez."
+                        Toast.makeText(getApplicationContext(), ""+task.getException(),Toast.LENGTH_LONG);
+                    }
+                }
+            });
+
         }
     }
 
