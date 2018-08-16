@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +18,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.quelvymuahio.postbus.Adapter.TicketAdapter;
 import com.project.quelvymuahio.postbus.Model.Bilhete;
-import com.project.quelvymuahio.postbus.Model.Car;
-import com.project.quelvymuahio.postbus.Model.CarModel;
-import com.project.quelvymuahio.postbus.Model.Carro;
-import com.project.quelvymuahio.postbus.Model.Rota;
-import com.project.quelvymuahio.postbus.Model.Route;
-import com.project.quelvymuahio.postbus.Model.RouteModel;
-import com.project.quelvymuahio.postbus.Model.Ticket;
-import com.project.quelvymuahio.postbus.Model.TicketModel;
 import com.project.quelvymuahio.postbus.R;
 
 import java.util.ArrayList;
@@ -38,7 +29,7 @@ public class RoutesFragment extends Fragment {
     private ProgressBar progressBar;
     private TicketAdapter ticketAdapter;
 
-    private List<Ticket> list;
+    private List<Bilhete> lista;
     private DatabaseReference mDatabaseRef;
 
     public RoutesFragment() {
@@ -56,34 +47,27 @@ public class RoutesFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_routes, container, false);
 
-
-        //listaBilhetes = new ArrayList<>();
-        //carList = new ArrayList<>();
-        //listaRotas = new ArrayList<>();
-
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         progressBar = (ProgressBar) view.findViewById(R.id.progress_circle);
 
-        //list.add(new Ticket("123", "auto_id", "rota_id", "Agendado", "75", "750", "28-05-2018", "09:00", "14-0-2018", "15h"));
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("bilhete");
 
         mDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                list = new ArrayList<>();
+                lista = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Ticket ticket = snapshot.getValue(Ticket.class);
-                    list.add(ticket);
+                    Bilhete bilhete = snapshot.getValue(Bilhete.class);
+                    lista.add(bilhete);
                 }
 
                 progressBar.setVisibility(View.INVISIBLE);
 
-                ticketAdapter = new TicketAdapter(getContext(), list);
+                ticketAdapter = new TicketAdapter(getContext(), lista);
                 recyclerView.setAdapter(ticketAdapter);
-
             }
 
             @Override
@@ -94,18 +78,6 @@ public class RoutesFragment extends Fragment {
 
 
         return view;
-    }
-
-    private void addDataToList() {
-
-        //listaCarros.clear();
-        //listaBilhetes.clear();
-        //listaRotas.clear();
-        //list.clear();
-        //carList.clear();
-
-
-
     }
 
 }
