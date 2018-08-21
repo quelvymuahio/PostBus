@@ -66,13 +66,10 @@ public class LoginActivity extends AppCompatActivity {
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
 
-    private ImageView facebook, gmail, twitter;
+    private ImageView facebook, gmail;
     private CallbackManager callbackManager;
 
-    private StorageReference storageReference;
     private DatabaseReference databaseReference;
 
     private FirebaseAuth mAuth;
@@ -86,12 +83,8 @@ public class LoginActivity extends AppCompatActivity {
 
         //Firebase Stuff
         mAuth = FirebaseAuth.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference("users");
         databaseReference = FirebaseDatabase.getInstance().getReference("users");
 
-        //Leading with Authentication
-
-        twitter = (ImageView) findViewById(R.id.twitter_login);
         facebook = (ImageView) findViewById(R.id.facebook_login);
         gmail = (ImageView) findViewById(R.id.gmail_login);
 
@@ -108,8 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        Log.d(TAG, "Facebook:onSuccess");
-                        Toast.makeText(getApplicationContext(), "Successo", Toast.LENGTH_LONG).show();
+
                         accessFacebookData(loginResult.getAccessToken());
                     }
 
@@ -166,7 +158,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button mEmailSignInButton = (Button) findViewById(R.id.sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -174,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button signUpButton = (Button) findViewById(R.id.email_sign_up_button);
+        Button signUpButton = (Button) findViewById(R.id.sign_up_button);
         signUpButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,8 +176,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
     }
 
     @Override
@@ -210,8 +200,12 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateAndForwardUI(currentUser);
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user != null){
+            startActivity(new Intent(getApplicationContext(), PostBus.class));
+            finish();
+        }
 
     }
 
@@ -255,41 +249,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private String getFileExtension(Uri uri){
-        ContentResolver contentResolver = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(contentResolver.getType(uri));
-    }
-
     private void saveUserToFirebaseDB(final FirebaseUser user) {
         final Uri imageUri = user.getPhotoUrl();
-        final String password = mPasswordView.getText().toString();
-        StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
 
-        fileReference.putFile(imageUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+        UserUpload userUpload = new UserUpload(user.getDisplayName(), user.getEmail(), "", user.getPhoneNumber(), "", imageUri.toString());
 
-                        UserUpload userUpload = new UserUpload(user.getDisplayName(), user.getEmail(), password, user.getPhoneNumber(), "", imageUri.toString());
-
-                        String uploadID = databaseReference.push().getKey();
-                        databaseReference.child(uploadID).setValue(userUpload);
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(getApplicationContext(), "Indo gravar", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        String uploadID = databaseReference.push().getKey();
+        databaseReference.child(uploadID).setValue(userUpload);
 
     }
 
@@ -342,67 +308,34 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
 
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
 
-            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()){
+                                startActivity(new Intent(LoginActivity.this, PostBus.class));
 
-                        showProgress(true);
-                        updateAndForwardUI(mAuth.getCurrentUser());
+                            } else {
 
-                    }else{
-                        // TO-DO
-                        // Deve ter um texto a vermelho que esteja escrito "Credenciais erradas, tente outra vez."
-                        Toast.makeText(getApplicationContext(), ""+task.getException(),Toast.LENGTH_LONG);
-                    }
-                }
-            });
+                               Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
+
+                            }
+                        }
+                    });
 
         }
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
+
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
+
         return password.length() > 4;
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
     }
 
 }

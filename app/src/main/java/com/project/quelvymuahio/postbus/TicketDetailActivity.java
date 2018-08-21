@@ -41,6 +41,7 @@ public class TicketDetailActivity extends AppCompatActivity {
 
             getSupportActionBar().setTitle((String) bundle.get("routeName"));
             toolbarLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.map));
+            toolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         }
 
 

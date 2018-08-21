@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -71,17 +72,21 @@ public class PostBus extends AppCompatActivity
 
     private void updatingTheView(FirebaseUser currentUser) {
 
-        username.setText(currentUser.getDisplayName() == null || currentUser.getDisplayName().isEmpty() ? "Sem username" : currentUser.getDisplayName());
+
+        Toast.makeText(getApplicationContext(), currentUser.getUid() + " | " + currentUser.getEmail(), Toast.LENGTH_LONG).show();
+        Log.d("USER ID:", currentUser.getUid() + " | " + currentUser.getEmail());
+        /*username.setText(currentUser.getDisplayName() == null || currentUser.getDisplayName().isEmpty() ? "Sem username" : currentUser.getDisplayName());
         userEmail.setText(currentUser.getEmail() == null || currentUser.getEmail().isEmpty() ? "Sem email" : currentUser.getEmail());
 
         if(currentUser.getPhotoUrl() == null){
             // Setting the default image
-            //Picasso.with(getApplicationContext()).load(currentUser.getPhotoUrl().toString()).into(userPhoto);
+            Picasso.with(getApplicationContext()).load(currentUser.getPhotoUrl().toString()).centerCrop().into(userPhoto);
+            Toast.makeText(getApplicationContext(), currentUser.getEmail(), Toast.LENGTH_LONG).show();
 
         }else {
 
             Picasso.with(getApplicationContext()).load(currentUser.getPhotoUrl().toString()).into(userPhoto);
-        }
+        }*/
     }
 
     @Override
@@ -136,8 +141,6 @@ public class PostBus extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
 
         }
-
-
 
     }
 

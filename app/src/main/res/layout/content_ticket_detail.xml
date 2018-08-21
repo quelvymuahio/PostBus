@@ -51,34 +51,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/ticket_info_id"
                     android:layout_below="@id/ticket_title"
-                    android:layout_margin="5dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="1"
-                        android:textSize="15dp"
-                        android:paddingRight="@dimen/activity_horizontal_margin"
-                        android:layout_alignParentRight="true"
-                        android:id="@+id/id_ticket"
-                        android:textColor="@color/colorBlack"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:textSize="15dp"
-                        android:layout_height="wrap_content"
-                        android:text="ID"
-                        android:paddingLeft="@dimen/activity_horizontal_margin"
-                        android:textColor="@color/colorBlack" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/ticket_info_id"
                     android:layout_margin="5dp"
                     android:id="@+id/ticket_info_price">
                     <TextView
@@ -170,7 +143,7 @@
                         android:textSize="15dp"
                         android:paddingRight="@dimen/activity_horizontal_margin"
                         android:layout_alignParentRight="true"
-                        android:id="@+id/tickets_departue_Date"
+                        android:id="@+id/tickets_departue_date"
                         android:textColor="@color/colorBlack"/>
 
                     <TextView
@@ -179,6 +152,87 @@
                         android:textSize="15dp"
                         android:layout_height="wrap_content"
                         android:text="DATA DE VIAGEM"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:textColor="@color/colorBlack" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ticket_info_date"
+                    android:layout_margin="5dp"
+                    android:id="@+id/ticket_info_departure_hour">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="8h"
+                        android:textSize="15dp"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/tickets_departue_hour"
+                        android:textColor="@color/colorBlack"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textSize="15dp"
+                        android:layout_height="wrap_content"
+                        android:text="HORA DE PARTIDA"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:textColor="@color/colorBlack" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ticket_info_departure_hour"
+                    android:layout_margin="5dp"
+                    android:id="@+id/ticket_info_arrival_date">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="31/05/2018"
+                        android:textSize="15dp"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/tickets_arrival_date"
+                        android:textColor="@color/colorBlack"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textSize="15dp"
+                        android:layout_height="wrap_content"
+                        android:text="DATA DE CHEGADA"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:textColor="@color/colorBlack" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ticket_info_arrival_date"
+                    android:layout_margin="5dp"
+                    android:id="@+id/ticket_info_arrival_hour">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12h"
+                        android:textSize="15dp"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        android:layout_alignParentRight="true"
+                        android:id="@+id/tickets_arrival_hour"
+                        android:textColor="@color/colorBlack"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textSize="15dp"
+                        android:layout_height="wrap_content"
+                        android:text="HORA DE CHEGADA"
                         android:paddingLeft="@dimen/activity_horizontal_margin"
                         android:textColor="@color/colorBlack" />
 
@@ -223,13 +277,11 @@
 
                 </RelativeLayout>
 
-
-
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/route_title"
-                    android:id="@+id/route_info_id">
+                    android:id="@+id/route_info_partida">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -244,7 +296,7 @@
                         android:layout_alignParentLeft="true"
                         android:textSize="15dp"
                         android:layout_height="wrap_content"
-                        android:text="ID"
+                        android:text="PARTIDA"
                         android:paddingLeft="@dimen/activity_horizontal_margin"
                         android:textColor="@color/colorBlack" />
 
@@ -253,7 +305,33 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/route_info_id"
+                    android:layout_below="@id/route_info_partida"
+                    android:id="@+id/route_info_destino">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1"
+                        android:textSize="15dp"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        android:layout_alignParentRight="true"
+                        android:textColor="@color/colorBlack"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:textSize="15dp"
+                        android:layout_height="wrap_content"
+                        android:text="DESTINO"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:textColor="@color/colorBlack" />
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/route_info_destino"
                     android:layout_margin="5dp"
                     android:id="@+id/route_info_distance">
                     <TextView
@@ -336,7 +414,7 @@
                         android:layout_alignParentLeft="true"
                         android:textSize="15dp"
                         android:layout_height="wrap_content"
-                        android:text="Motorista"
+                        android:text="MOTORISTA"
                         android:paddingLeft="@dimen/activity_horizontal_margin"
                         android:textColor="@color/colorBlack" />
 

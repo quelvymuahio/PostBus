@@ -134,24 +134,21 @@ public class RegistrationActivity extends AppCompatActivity{
         mLoginFormView = findViewById(R.id.login_form);
     }
 
-    private void createUser() {
-        if (!email.isEmpty() || email != null){
-            mAuth = FirebaseAuth.getInstance();
-            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()){
+    private void createUser(String email, String password) {
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()){
 
-                        startActivity(new Intent(RegistrationActivity.this, PostBus.class));
-                        finish();
-
-                    }else {
-                        Toast.makeText(getApplicationContext(), ""+task.getException(), Toast.LENGTH_LONG).show();
-                    }
-
+                    startActivity(new Intent(RegistrationActivity.this, PostBus.class));
+                    finish();
+                }else {
+                    Toast.makeText(getApplicationContext(), ""+task.getException(), Toast.LENGTH_LONG).show();
                 }
-            });
-        }
+            }
+        });
+
     }
 
     private String getFileExtension(Uri uri){
@@ -177,11 +174,11 @@ public class RegistrationActivity extends AppCompatActivity{
                                 }
                             }, 5000);
 
-                            UserUpload userUpload = new UserUpload(fullName, email, password , contact, birthDate, taskSnapshot.getDownloadUrl().toString());
+                            UserUpload userUpload = new UserUpload(fullName, email, password, contact, birthDate, taskSnapshot.getDownloadUrl().toString());
                             String uploadID = databaseReference.push().getKey();
                             databaseReference.child(uploadID).setValue(userUpload);
 
-                            createUser();
+                            createUser(email , password);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -193,7 +190,6 @@ public class RegistrationActivity extends AppCompatActivity{
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(getApplicationContext(), "Indo gravar", Toast.LENGTH_SHORT).show();
                             double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
                             progressBar.setProgress((int) progress);
                         }
@@ -277,11 +273,6 @@ public class RegistrationActivity extends AppCompatActivity{
 
         if (cancel) {
             focusView.requestFocus();
-        } else {
-            //showProgress(true);
-
-            //startActivity(new Intent(RegistrationActivity.this, PostBus.class));
-            //finish();
         }
     }
 
