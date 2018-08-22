@@ -36,7 +36,7 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull TicketHolder holder, int position) {
-        Bilhete bilhete = lista.get(position);
+        final Bilhete bilhete = lista.get(position);
 
         final String imageUrl = bilhete.getCarro_imagem();
         final String routeName = bilhete.getRota_partida() +" - "+ bilhete.getRota_destino();
@@ -56,7 +56,20 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketHolder> {
                 Context context = view.getContext();
                 Intent intent = new Intent(context, TicketDetailActivity.class);
                 //intent.putExtra("image", image);
-                intent.putExtra("routeName", routeName);
+                intent.putExtra("rota", routeName);
+                intent.putExtra("preco", bilhete.getPreco());
+                intent.putExtra("bilhetes", bilhete.getTotal());
+                intent.putExtra("estado", bilhete.getEstado());
+                intent.putExtra("data_partida", bilhete.getData_partida());
+                intent.putExtra("data_chegada", bilhete.getData_chegada());
+                intent.putExtra("hora_partida", bilhete.getHora_chegada());
+                intent.putExtra("hora_chegada", bilhete.getHora_chegada());
+                intent.putExtra("partida", bilhete.getRota_partida());
+                intent.putExtra("destino", bilhete.getRota_destino());
+                intent.putExtra("distancia", bilhete.getRota_distancia());
+                intent.putExtra("motorista", bilhete.getCarro_motorista());
+                intent.putExtra("matricula", bilhete.getCarro_matricula());
+                intent.putExtra("assentos", bilhete.getCarro_assentos());
                 context.startActivity(intent);
             }
         });

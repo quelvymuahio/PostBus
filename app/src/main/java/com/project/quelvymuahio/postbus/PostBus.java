@@ -24,10 +24,16 @@ import android.widget.Toast;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.project.quelvymuahio.postbus.Adapter.ViewPagerAdapter;
 import com.project.quelvymuahio.postbus.Fragment.RoutesFragment;
 import com.project.quelvymuahio.postbus.Fragment.ScheduledFragment;
 import com.project.quelvymuahio.postbus.Fragment.TicketsFragment;
+import com.project.quelvymuahio.postbus.Upload.UserUpload;
 import com.squareup.picasso.Picasso;
 
 import javax.crypto.interfaces.PBEKey;
@@ -41,6 +47,7 @@ public class PostBus extends AppCompatActivity
     private View headerView;
 
     private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,23 +77,40 @@ public class PostBus extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private void updatingTheView(FirebaseUser currentUser) {
+    private void updatingTheView(final FirebaseUser currentUser) {
 
+        mDatabase = FirebaseDatabase.getInstance().getReference("users");
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    UserUpload user = snapshot.getValue(UserUpload.class);
 
-        Toast.makeText(getApplicationContext(), currentUser.getUid() + " | " + currentUser.getEmail(), Toast.LENGTH_LONG).show();
-        Log.d("USER ID:", currentUser.getUid() + " | " + currentUser.getEmail());
-        /*username.setText(currentUser.getDisplayName() == null || currentUser.getDisplayName().isEmpty() ? "Sem username" : currentUser.getDisplayName());
-        userEmail.setText(currentUser.getEmail() == null || currentUser.getEmail().isEmpty() ? "Sem email" : currentUser.getEmail());
+                    if (user.getEmail().equals(currentUser.getEmail())){
 
-        if(currentUser.getPhotoUrl() == null){
-            // Setting the default image
-            Picasso.with(getApplicationContext()).load(currentUser.getPhotoUrl().toString()).centerCrop().into(userPhoto);
-            Toast.makeText(getApplicationContext(), currentUser.getEmail(), Toast.LENGTH_LONG).show();
+                        username.setText(user.getName());
+                        userEmail.setText(user.getEmail());
 
-        }else {
+                        if (!user.getImageUrl().isEmpty() || user.getImageUrl() != null) {
+                            Picasso.with(getApplicationContext())
+                                    .load(user.getImageUrl())
+                                    .into(userPhoto);
+                        }
+                        Toast.makeText(getApplicationContext(), "Seja Bem Vindo "+user.getName(), Toast.LENGTH_LONG).show();
 
-            Picasso.with(getApplicationContext()).load(currentUser.getPhotoUrl().toString()).into(userPhoto);
-        }*/
+                        break;
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
     @Override

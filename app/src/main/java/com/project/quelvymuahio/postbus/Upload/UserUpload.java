@@ -4,7 +4,9 @@ public class UserUpload {
 
     private String name, email, password, contact, birthDate, imageUrl;
 
-    //public UserUpload(){}
+    public UserUpload(){
+        // Required empty public constructor
+    }
 
     public UserUpload(String name, String email, String password, String contact, String birthDate, String imageUrl) {
         this.name = name;
