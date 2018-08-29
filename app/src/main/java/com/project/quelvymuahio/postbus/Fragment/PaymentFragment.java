@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import com.project.quelvymuahio.postbus.ReciptActivity;
 public class PaymentFragment extends Fragment {
 
     ArrayAdapter<CharSequence> adapter;
+    private String price = "";
 
     public PaymentFragment() {
         // Required empty public constructor
@@ -32,6 +34,11 @@ public class PaymentFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_payment, container, false);
         Spinner spinner = (Spinner) view.findViewById(R.id.spinner);
         Button send = (Button) view.findViewById(R.id.send_money);
+
+        Bundle bundle = getArguments();
+        price = (String) bundle.get("price");
+
+        Log.d("ARGURMENT PASSED", String.valueOf(price));
 
         adapter = ArrayAdapter.createFromResource(getActivity(), R.array.different_payments, R.layout.support_simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);

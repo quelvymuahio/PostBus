@@ -14,6 +14,13 @@ import android.widget.TextView;
 
 public class TicketDetailActivity extends AppCompatActivity {
 
+    private String routeName = "";
+    private String preco = "";
+    private String data_partida = "";
+    private String hora_partida = "";
+    String bilhetes, estado, data_chegada,  hora_chegada, partida;
+    String destino, distancia, motorista, matricula, assentos;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,31 +45,23 @@ public class TicketDetailActivity extends AppCompatActivity {
         TextView car_registration = (TextView) findViewById(R.id.car_registration);
         TextView car_seatingSeats = (TextView) findViewById(R.id.car_seatingSeats);
 
-        Button buyTicket = (Button) findViewById(R.id.buy_ticket_btn);
-        buyTicket.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(TicketDetailActivity.this, BuyTicketActivity.class ));
-            }
-        });
-
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null){
-            String routeName = (String) bundle.get("routeName");
-            String preco = (String) bundle.get("preco");
-            String bilhetes = (String) bundle.get("bilhetes");
-            String estado = (String) bundle.get("estado");
-            String data_partida = (String) bundle.get("data_partida");
-            String data_chegada = (String) bundle.get("data_chegada");
-            String hora_partida = (String) bundle.get("hora_partida");
-            String hora_chegada = (String) bundle.get("hora_chegada");
-            String partida = (String) bundle.get("partida");
-            String destino = (String) bundle.get("destino");
-            String distancia = (String) bundle.get("distancia");
-            String motorista = (String) bundle.get("motorista");
-            String matricula = (String) bundle.get("matricula");
-            String assentos = (String) bundle.get("assentos");
+            routeName = (String) bundle.get("routeName");
+            preco = (String) bundle.get("preco");
+            bilhetes = (String) bundle.get("bilhetes");
+            estado = (String) bundle.get("estado");
+            data_partida = (String) bundle.get("data_partida");
+            data_chegada = (String) bundle.get("data_chegada");
+            hora_partida = (String) bundle.get("hora_partida");
+            hora_chegada = (String) bundle.get("hora_chegada");
+            partida = (String) bundle.get("partida");
+            destino = (String) bundle.get("destino");
+            distancia = (String) bundle.get("distancia");
+            motorista = (String) bundle.get("motorista");
+            matricula = (String) bundle.get("matricula");
+            assentos = (String) bundle.get("assentos");
 
             ticket_price.setText(preco);
             tickets_available.setText(bilhetes);
@@ -85,7 +84,18 @@ public class TicketDetailActivity extends AppCompatActivity {
             toolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         }
 
-
+        Button buyTicket = (Button) findViewById(R.id.buy_ticket_btn);
+        buyTicket.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TicketDetailActivity.this, BuyTicketActivity.class );
+                intent.putExtra("rota", routeName);
+                intent.putExtra("preco", preco);
+                intent.putExtra("data", data_partida);
+                intent.putExtra("hora", hora_partida);
+                startActivity(intent);
+            }
+        });
 
     }
 

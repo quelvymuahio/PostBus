@@ -55,7 +55,6 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketHolder> {
             public void onClick(View view) {
                 Context context = view.getContext();
                 Intent intent = new Intent(context, TicketDetailActivity.class);
-                //intent.putExtra("image", image);
                 intent.putExtra("rota", routeName);
                 intent.putExtra("preco", bilhete.getPreco());
                 intent.putExtra("bilhetes", bilhete.getTotal());
